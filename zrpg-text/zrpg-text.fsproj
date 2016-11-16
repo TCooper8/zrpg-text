@@ -94,13 +94,6 @@
     <Reference Include="System.Numerics" />
     <Reference Include="System.Web" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\far-net\far-net\far-net.fsproj">
-      <Name>far-net</Name>
-      <Project>{48441b1a-3c95-4786-9adb-5dae2b172dd9}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
