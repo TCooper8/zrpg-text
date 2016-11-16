@@ -61,6 +61,8 @@
     <Compile Include="Accounts.fs" />
     <Compile Include="Auths.fs" />
     <Compile Include="Permissions.fs" />
+    <Compile Include="Zones.fs" />
+    <Compile Include="Regions.fs" />
     <Compile Include="Heroes.fs" />
     <Compile Include="Kingdoms.fs" />
     <Compile Include="Game.fs" />

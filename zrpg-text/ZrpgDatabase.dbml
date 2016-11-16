@@ -56,6 +56,13 @@
       <Association Name="PERMISSIONS_AUTHID_FK" Member="Auths" ThisKey="AuthId" OtherKey="Id" Type="Auths" IsForeignKey="true" DeleteOnNull="true" />
     </Type>
   </Table>
+  <Table Name="dbo.Regions" Member="Regions">
+    <Type Name="Regions">
+      <Column Name="Id" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(128) NOT NULL" CanBeNull="false" />
+      <Association Name="ZONES_REGIONID_FK" Member="Zones" ThisKey="Id" OtherKey="RegionId" Type="Zones" DeleteRule="CASCADE" />
+    </Type>
+  </Table>
   <Table Name="dbo.Stats" Member="Stats">
     <Type Name="Stats">
       <Column Name="Id" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
@@ -70,6 +77,14 @@
       <Column Name="Id" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
       <Column Name="AuthId" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" CanBeNull="false" />
       <Association Name="TOKENS_AUTHID_FK" Member="Auths" ThisKey="AuthId" OtherKey="Id" Type="Auths" IsForeignKey="true" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Zones" Member="Zones">
+    <Type Name="Zones">
+      <Column Name="Id" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(128) NOT NULL" CanBeNull="false" />
+      <Column Name="RegionId" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" CanBeNull="false" />
+      <Association Name="ZONES_REGIONID_FK" Member="Regions" ThisKey="RegionId" OtherKey="Id" Type="Regions" IsForeignKey="true" DeleteOnNull="true" />
     </Type>
   </Table>
 </Database>

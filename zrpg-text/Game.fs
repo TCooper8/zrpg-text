@@ -13,13 +13,13 @@ open Accounts
 open Auths
 open Kingdoms
 open Heroes
+open Zones
+open Regions
 
 module Game =
   type dbSchema = Microsoft.FSharp.Data.TypeProviders.DbmlFile<"ZrpgDatabase.dbml", ContextTypeName = "ZrpgContext">
   let connectionString = "Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\coope\Documents\zrpg.mdf;Integrated Security=True;Connect Timeout=30"
   let db = new dbSchema.ZrpgContext(connectionString)
-  //type dbSchema = SqlDataConnection<"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\coope\Documents\zrpg.mdf;Integrated Security=True;Connect Timeout=30">
-  //let db = dbSchema.GetDataContext()
 
   let warnings = false
 
@@ -323,6 +323,49 @@ module Game =
           }
         with e ->
           PostHeroConflict {
+            reason = e.Message
+          }
+
+  type ZoneService () =
+    interface Zones with
+      member this.post request =
+        let id = Guid.NewGuid()
+        let row =
+          dbSchema.Zones(
+            Id = Binary(id.ToByteArray()),
+            RegionId = Binary(request.cmd.regionId.ToByteArray()),
+            Name = request.cmd.name
+          )
+        db.Zones.InsertOnSubmit(row)
+
+        try
+          db.SubmitChanges()
+          PostZoneCreated {
+            id = id
+          }
+        with e ->
+          PostZoneConflict {
+            reason = e.Message
+          }
+
+  type RegionService () =
+    interface Regions with
+      member this.post request =
+        let id = Guid.NewGuid()
+        let row =
+          dbSchema.Regions(
+            Id = Binary(id.ToByteArray()),
+            Name = request.cmd.name
+          )
+        db.Regions.InsertOnSubmit(row)
+
+        try
+          db.SubmitChanges()
+          PostRegionCreated {
+            id = id
+          }
+        with e ->
+          PostRegionConflict {
             reason = e.Message
           }
 
