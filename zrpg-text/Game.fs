@@ -6,6 +6,7 @@ open System.Data.Linq
 open Microsoft.FSharp.Data.TypeProviders
 open Microsoft.FSharp.Linq
 
+open Newtonsoft.Json
 open DevOne.Security.Cryptography.BCrypt
 
 open AccountActivations
@@ -22,6 +23,11 @@ module Game =
   let db = new dbSchema.ZrpgContext(connectionString)
 
   let warnings = false
+
+  type WorldDump = {
+    regions: PutRegion seq
+    zones: PutZone seq
+  }
 
   //db.Log <- System.Console.Out
 
@@ -348,6 +354,25 @@ module Game =
             reason = e.Message
           }
 
+      member this.put request =
+        let row =
+          dbSchema.Zones(
+            Id = Binary(request.cmd.id.ToByteArray()),
+            RegionId = Binary(request.cmd.regionId.ToByteArray()),
+            Name = request.cmd.name
+          )
+        db.Zones.InsertOnSubmit(row)
+
+        try
+          db.SubmitChanges()
+          PutZoneOk {
+            status = "created"
+          }
+        with e ->
+          PutZoneConflict {
+            reason = e.Message
+          }
+
   type RegionService () =
     interface Regions with
       member this.post request =
@@ -366,6 +391,24 @@ module Game =
           }
         with e ->
           PostRegionConflict {
+            reason = e.Message
+          }
+
+      member this.put request =
+        let row =
+          dbSchema.Regions(
+            Id = Binary(request.cmd.id.ToByteArray()),
+            Name = request.cmd.name
+          )
+        db.Regions.InsertOnSubmit(row)
+
+        try
+          db.SubmitChanges()
+          PutRegionOk {
+            status = "created"
+          }
+        with e ->
+          PutRegionConflict {
             reason = e.Message
           }
 
@@ -389,12 +432,45 @@ module Game =
         kingdoms
       ) :> Accounts
     let heroes = HeroService() :> Heroes
+    let regions = RegionService() :> Regions
+    let zones = ZoneService() :> Zones
 
     member this.postHero =
       heroes.post
 
     member this.getKingdom =
       kingdoms.get
+
+    member this.loadWorld () =
+      // TODO: Address world loading requirements.
+      // Currently, the world will be loaded in from a json file.
+      let worldFilepath = "../../world.json"
+      use worldFile = System.IO.File.OpenText(worldFilepath)
+      let data = worldFile.ReadToEnd()
+      let world = JsonConvert.DeserializeObject<WorldDump>(data)
+
+      // Now, take the world and load in the data.
+      for putRegion in world.regions do
+        let request: PutRegionRequest = {
+          token = ""
+          cmd = putRegion
+        }
+        match regions.put request with
+        | PutRegionOk ok -> ()
+        | PutRegionConflict conflict ->
+          printf "Warning : %A on regions.put %A" conflict putRegion
+
+      for putZone in world.zones do
+        let request: PutZoneRequest = {
+          token = ""
+          cmd = putZone
+        }
+        match zones.put request with
+        | PutZoneOk ok -> ()
+        | PutZoneConflict conflict ->
+          printf "Warning : %A on regions.put %A" conflict putZone
+
+      () 
 
     member this.handle cmd =
       match cmd with

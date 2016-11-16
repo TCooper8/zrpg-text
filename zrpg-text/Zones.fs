@@ -36,6 +36,30 @@ module Zones =
     reason: string
   }
 
+  type PutZone = {
+    id: Guid
+    regionId: Guid
+    name: string
+  }
+
+  type PutZoneRequest = {
+    token: string
+    cmd: PutZone
+  }
+
+  type PutZoneResult =
+    | PutZoneOk of PutZoneOk
+    | PutZoneConflict of PutZoneConflict
+
+  and PutZoneOk = {
+    status: string
+  }
+
+  and PutZoneConflict = {
+    reason: string
+  }
+
   [<Interface>]
   type Zones =
     abstract member post: PostZoneRequest -> PostZoneResult
+    abstract member put: PutZoneRequest -> PutZoneResult

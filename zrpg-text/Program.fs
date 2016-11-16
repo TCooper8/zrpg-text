@@ -6,12 +6,15 @@ open Zrpg.Accounts
 open Zrpg.Heroes
 open Zrpg.Game
 open Zrpg.Kingdoms
+open Zrpg.Regions
+open Zrpg.Zones
 
 open System
 
 [<EntryPoint>]
-let main argv = 
+let main argv =
   let game = Game()
+  game.loadWorld ()
 
   let login email password =
     game.handle
