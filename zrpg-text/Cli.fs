@@ -84,13 +84,13 @@ module Cli =
       // First, lookup the module based on the input.
       let parts = input.Split(' ') |> Array.toList
       match parts with
-      | moduleName::method::args ->
+      | moduleName::cmdName::args ->
         match moduleTable.TryFind moduleName with
         | None ->
           sprintf "Module %s does not exist." moduleName, NoOp
         | Some cliModule ->
           cliModule.commands
-          |> Seq.tryFind (fun cmd -> cmd.name = method)
+          |> Seq.tryFind (fun cmd -> cmd.name = cmdName)
           |> Option.map (fun cmd ->
             // Zip the params up with the command params.
             let finalArgs = seq {
@@ -109,7 +109,7 @@ module Cli =
 
             //"Method not invoked", NoOp
           )
-          |> defaultArg <| (sprintf "Method [%s].[%s] does not exist." moduleName method, NoOp)
+          |> defaultArg <| (sprintf "Method [%s].[%s] does not exist." moduleName cmdName, NoOp)
       | moduleName::[] ->
         // Lookup the module and report the info.
         match moduleTable.TryFind moduleName with

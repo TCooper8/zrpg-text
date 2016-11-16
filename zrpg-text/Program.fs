@@ -35,10 +35,10 @@ let main argv =
     game.handle
     <| PostAccountActivation
       { token = "bob"
-        cmd = {
-          emailAddress = "bobby@gmail.com"
-          screenName = "bobby"
-        }
+        cmd =
+          { emailAddress = "bobby@gmail.com"
+            screenName = "bobby"
+          }
       }
     |> fun reply ->
       match reply with
@@ -84,10 +84,10 @@ let main argv =
 
               let result = game.handle <| PostAccountActivation {
                 token = ""
-                cmd = {
-                  emailAddress = emailAddress
-                  screenName = screenName
-                }
+                cmd = 
+                  { emailAddress = emailAddress
+                    screenName = screenName
+                  }
               }
               match result with
               | PostAccountActivationResult (PostAccountActivationCreated activation) ->
@@ -136,9 +136,9 @@ let main argv =
                   let kingdom =
                     let result = game.getKingdom {
                       token = auth.token
-                      cmd = {
-                        id = auth.account.kingdomId
-                      }
+                      cmd =
+                        { id = auth.account.kingdomId
+                        }
                     }
                     match result with
                     | GetKingdomOk ok ->

@@ -57,10 +57,10 @@ module Game =
         }
         |> Seq.tryHead
         |> Option.map (fun row ->
-          if BCryptHelper.CheckPassword(
-            request.password,
-            row.PasswordHash
-          ) then
+          if BCryptHelper.CheckPassword
+            ( request.password,
+              row.PasswordHash
+            ) then
             // Delete any existing tokens for this login.
             query {
               for row in db.Tokens do
@@ -305,20 +305,13 @@ module Game =
           )
         db.Stats.InsertOnSubmit(statsRow)
 
-        let heroClassCol =
-          match request.cmd.heroClass with
-          | Warrior -> "Warrior"
-        let raceCol =
-          match request.cmd.race with
-          | Human -> "Human" 
-
         let row =
           dbSchema.Heroes(
             Id = Binary(id.ToByteArray()),
             KingdomId = Binary(request.cmd.kingdomId.ToByteArray()),
             Name = request.cmd.name,
-            HeroClass = heroClassCol,
-            Race = raceCol,
+            HeroClass = request.cmd.heroClass.ToString(),
+            Race = request.cmd.race.ToString(),
             StatsId = Binary(statsId.ToByteArray())
           )
         db.Heroes.InsertOnSubmit(row)
