@@ -15,17 +15,22 @@ open Kingdoms
 open Heroes
 
 module Game =
-  type dbSchema = SqlDataConnection<"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\coope\Documents\zrpg.mdf;Integrated Security=True;Connect Timeout=30">
-  let db = dbSchema.GetDataContext()
+  type dbSchema = Microsoft.FSharp.Data.TypeProviders.DbmlFile<"ZrpgDatabase.dbml", ContextTypeName = "ZrpgContext">
+  let connectionString = "Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\coope\Documents\zrpg.mdf;Integrated Security=True;Connect Timeout=30"
+  let db = new dbSchema.ZrpgContext(connectionString)
+  //type dbSchema = SqlDataConnection<"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\coope\Documents\zrpg.mdf;Integrated Security=True;Connect Timeout=30">
+  //let db = dbSchema.GetDataContext()
 
-  //db.DataContext.Log <- System.Console.Out
+  let warnings = false
+
+  //db.Log <- System.Console.Out
 
   type AccountActivationService () =
     interface AccountActivations with
       member this.post request =
         let id = Guid.NewGuid()
         let row =
-          dbSchema.ServiceTypes.AccountActivations(
+          dbSchema.AccountActivations(
             Id = Binary(id.ToByteArray()),
             EmailAddress = request.cmd.emailAddress,
             ScreenName = request.cmd.screenName
@@ -33,7 +38,7 @@ module Game =
         db.AccountActivations.InsertOnSubmit(row)
 
         try
-          db.DataContext.SubmitChanges()
+          db.SubmitChanges()
           PostAccountActivationCreated {
             id = id
           }
@@ -66,13 +71,13 @@ module Game =
               db.Tokens.DeleteAllOnSubmit(rows)
 
               try
-                db.DataContext.SubmitChanges()
+                db.SubmitChanges()
               with e ->
                 printfn "Error %A" e
 
             let tokenId = Guid.NewGuid()
             let tokenRow =
-              dbSchema.ServiceTypes.Tokens(
+              dbSchema.Tokens(
                 Id = Binary(tokenId.ToByteArray()),
                 AuthId = row.Id
               )
@@ -101,7 +106,7 @@ module Game =
               db.Tokens.InsertOnSubmit(tokenRow)
 
               try
-                db.DataContext.SubmitChanges()
+                db.SubmitChanges()
 
                 GetAuthOk {
                   token = tokenId.ToString()
@@ -123,7 +128,7 @@ module Game =
       member this.post request =
         let id = Guid.NewGuid()
         let row =
-          dbSchema.ServiceTypes.Auths(
+          dbSchema.Auths(
             Id = Binary(id.ToByteArray()),
             Login = request.login,
             PasswordHash = request.passwordHash
@@ -131,7 +136,7 @@ module Game =
         db.Auths.InsertOnSubmit(row)
 
         try
-          db.DataContext.SubmitChanges()
+          db.SubmitChanges()
           PostAuthCreated {
             id = id
           }
@@ -202,14 +207,14 @@ module Game =
       member this.post request =
         let id = Guid.NewGuid()
         let row =
-          dbSchema.ServiceTypes.Kingdoms(
+          dbSchema.Kingdoms(
             Id = Binary(id.ToByteArray()),
             ScreenName = request.screenName
           )
         db.Kingdoms.InsertOnSubmit(row)
 
         try
-          db.DataContext.SubmitChanges()
+          db.SubmitChanges()
           PostKingdomCreated {
             id = id
           }
@@ -258,7 +263,7 @@ module Game =
             | PostKingdomCreated kingdomCreated ->
               let accountId = Guid.NewGuid()
               let row =
-                dbSchema.ServiceTypes.Accounts(
+                dbSchema.Accounts(
                   Id = Binary(accountId.ToByteArray()),
                   AuthId = Binary(authCreated.id.ToByteArray()),
                   KingdomId = Binary(kingdomCreated.id.ToByteArray()),
@@ -267,7 +272,7 @@ module Game =
               db.Accounts.InsertOnSubmit(row)
 
               try
-                db.DataContext.SubmitChanges()
+                db.SubmitChanges()
                 PostAccountCreated {
                   id = accountId
                 }
@@ -286,18 +291,13 @@ module Game =
         }
 
   type HeroService () =
-    do
-      try db.DataContext.ExecuteCommand(Heroes.schema) |> ignore
-      with e ->
-        printfn "Warning : %A" e.Message
-
     interface Heroes with
       member this.post request =
         let id = Guid.NewGuid()
         let statsId = Guid.NewGuid()
 
         let statsRow =
-          dbSchema.ServiceTypes.Stats(
+          dbSchema.Stats(
             Id = Binary(statsId.ToByteArray()),
             Level = 1,
             MaxHealth = 10,
@@ -313,7 +313,7 @@ module Game =
           | Human -> "Human" 
 
         let row =
-          dbSchema.ServiceTypes.Heroes(
+          dbSchema.Heroes(
             Id = Binary(id.ToByteArray()),
             KingdomId = Binary(request.cmd.kingdomId.ToByteArray()),
             Name = request.cmd.name,
@@ -324,7 +324,7 @@ module Game =
         db.Heroes.InsertOnSubmit(row)
 
         try
-          db.DataContext.SubmitChanges()
+          db.SubmitChanges()
           PostHeroCreated {
             id = id
           }

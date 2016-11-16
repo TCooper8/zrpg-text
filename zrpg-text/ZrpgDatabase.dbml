@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Database Name="C:\USERS\COOPE\DOCUMENTS\ZRPG.MDF" Class="C__USERS_COOPE_DOCUMENTS_ZRPG_MDF" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Table Name="dbo.AccountActivations" Member="AccountActivations">
+    <Type Name="AccountActivations">
+      <Column Name="Id" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="EmailAddress" Type="System.String" DbType="NText NOT NULL" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="ScreenName" Type="System.String" DbType="NText NOT NULL" CanBeNull="false" UpdateCheck="Never" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Accounts" Member="Accounts">
+    <Type Name="Accounts">
+      <Column Name="Id" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="AuthId" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" CanBeNull="false" />
+      <Column Name="KingdomId" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" CanBeNull="false" />
+      <Column Name="EmailAddress" Type="System.String" DbType="NText NOT NULL" CanBeNull="false" UpdateCheck="Never" />
+      <Association Name="ACCOUNTS_AUTHID_FK" Member="Auths" ThisKey="AuthId" OtherKey="Id" Type="Auths" IsForeignKey="true" DeleteOnNull="true" />
+      <Association Name="ACCOUNTS_KINGDOMID_FK" Member="Kingdoms" ThisKey="KingdomId" OtherKey="Id" Type="Kingdoms" IsForeignKey="true" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Auths" Member="Auths">
+    <Type Name="Auths">
+      <Column Name="Id" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Login" Type="System.String" DbType="VarChar(128) NOT NULL" CanBeNull="false" />
+      <Column Name="PasswordHash" Type="System.String" DbType="NText NOT NULL" CanBeNull="false" UpdateCheck="Never" />
+      <Association Name="ACCOUNTS_AUTHID_FK" Member="Accounts" ThisKey="Id" OtherKey="AuthId" Type="Accounts" DeleteRule="CASCADE" />
+      <Association Name="PERMISSIONS_AUTHID_FK" Member="Permissions" ThisKey="Id" OtherKey="AuthId" Type="Permissions" DeleteRule="CASCADE" />
+      <Association Name="TOKENS_AUTHID_FK" Member="Tokens" ThisKey="Id" OtherKey="AuthId" Type="Tokens" Cardinality="One" DeleteRule="CASCADE" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Heroes" Member="Heroes">
+    <Type Name="Heroes">
+      <Column Name="Id" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="NText NOT NULL" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="HeroClass" Type="System.String" DbType="NText NOT NULL" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="Race" Type="System.String" DbType="NText NOT NULL" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="StatsId" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" CanBeNull="false" />
+      <Column Name="KingdomId" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" CanBeNull="false" />
+      <Association Name="HEROES_KINGDOMID_FK" Member="Kingdoms" ThisKey="KingdomId" OtherKey="Id" Type="Kingdoms" IsForeignKey="true" DeleteOnNull="true" />
+      <Association Name="HEROES_STATSID_FK" Member="Stats" ThisKey="StatsId" OtherKey="Id" Type="Stats" IsForeignKey="true" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Kingdoms" Member="Kingdoms">
+    <Type Name="Kingdoms">
+      <Column Name="Id" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="ScreenName" Type="System.String" DbType="VarChar(128) NOT NULL" CanBeNull="false" />
+      <Association Name="ACCOUNTS_KINGDOMID_FK" Member="Accounts" ThisKey="Id" OtherKey="KingdomId" Type="Accounts" DeleteRule="CASCADE" />
+      <Association Name="HEROES_KINGDOMID_FK" Member="Heroes" ThisKey="Id" OtherKey="KingdomId" Type="Heroes" DeleteRule="CASCADE" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Permissions" Member="Permissions">
+    <Type Name="Permissions">
+      <Column Name="GranterId" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" CanBeNull="false" />
+      <Column Name="Method" Type="System.String" DbType="VarChar(16) NOT NULL" CanBeNull="false" />
+      <Column Name="Uri" Type="System.String" DbType="VarChar(256) NOT NULL" CanBeNull="false" />
+      <Column Name="AuthId" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" CanBeNull="false" />
+      <Association Name="PERMISSIONS_AUTHID_FK" Member="Auths" ThisKey="AuthId" OtherKey="Id" Type="Auths" IsForeignKey="true" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Stats" Member="Stats">
+    <Type Name="Stats">
+      <Column Name="Id" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Level" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="MaxHealth" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Strength" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="HEROES_STATSID_FK" Member="Heroes" ThisKey="Id" OtherKey="StatsId" Type="Heroes" DeleteRule="CASCADE" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Tokens" Member="Tokens">
+    <Type Name="Tokens">
+      <Column Name="Id" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="AuthId" Type="System.Data.Linq.Binary" DbType="Binary(16) NOT NULL" CanBeNull="false" />
+      <Association Name="TOKENS_AUTHID_FK" Member="Auths" ThisKey="AuthId" OtherKey="Id" Type="Auths" IsForeignKey="true" DeleteOnNull="true" />
+    </Type>
+  </Table>
+</Database>

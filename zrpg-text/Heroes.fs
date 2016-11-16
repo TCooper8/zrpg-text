@@ -3,18 +3,6 @@
 open System
 
 module Heroes =
-  let schema =
-    @"CREATE TABLE [dbo].[Heroes] (
-      [Id]        BINARY (16) NOT NULL,
-      [Name]      NTEXT       NOT NULL,
-      [HeroClass] NTEXT       NOT NULL,
-      [Race]      NTEXT       NOT NULL,
-      [StatsId]   BINARY (16) NOT NULL,
-      [KingdomId] BINARY (16) NOT NULL,
-      PRIMARY KEY CLUSTERED ([Id] ASC)
-    );
-    "
-
   type HeroClass =
     | Warrior
     with
