@@ -1,0 +1,1 @@
+﻿sqlmetal /sprocs /dbml:C:\users\coope\Documents\dev\tcooper8\zrpg-text\zrpg-text\ZrpgDatabase.dbml /conn:"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\coope\Documents\zrpg.mdf;Integrated Security=True;Connect Timeout=30"
